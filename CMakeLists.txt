@@ -9,12 +9,30 @@ project(path_prediction)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  geometry_msgs
   visualization_msgs
 )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
+# include_directories(/usr/include/eigen3)
+
+find_package( PkgConfig )
+pkg_check_modules( EIGEN3 REQUIRED eigen3 )
+include_directories( ${EIGEN3_INCLUDE_DIRS} )
+
+# find_package(cmake_modules)
+# find_package(Eigen3 REQUIRED COMPONENTS system)
+# include_directories(${Eigen3_INCLUDE_DIRS})
+
+# find_package(Eigen REQUIRED)
+# include_directories(${Eigen_INCLUDE_DIRS})
+
+# find_package(PCL 1.8.0 REQUIRED)
+# include_directories(${PCL_INCLUDE_DIRS})
+# link_directories(${PCL_LIBRARY_DIRS})
+# add_definitions(${PCL_DEFINITIONS})
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -115,7 +133,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -150,6 +168,9 @@ SET(CMAKE_CXX_FLAGS "-std=c++11 -O2 -g -Wall ${CMAKE_CXX_FLAGS}")
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
+
+add_executable(test_path_prediction src/test.cpp src/path_prediction.cpp)
+target_link_libraries(test_path_prediction ${catkin_LIBRARIES})
 
 #############
 ## Install ##
