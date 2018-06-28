@@ -41,30 +41,52 @@ namespace path_prediction{
 
 	void PathPredictor::publish()
 	{
+		if(!line.points.empty()){
+			lines.markers.push_back(line);
+		}
 		trajectory_publisher.publish(lines);
 		id = 0;
+		line.points.clear();
 		lines.markers.clear();
 	}
 
-	void PathPredictor::predict(const Eigen::Vector2d& init_position,
-								const std::vector<Eigen::Vector2d>& velocities)
+	Eigen::Vector2d PathPredictor::predict(const Eigen::Vector2d& init_position,
+										   const Eigen::Vector2d& velocity)
 	{
+		if(!line.points.empty()){
+			lines.markers.push_back(line);
+			line.points.clear();
+		}
+
 		line.id = id++;
 		line.header.stamp = ros::Time::now();
 
 		geometry_msgs::Point p;
 
-		p.x = init_position.x();
-		p.y = init_position.y();
+		position = init_position;
+		p.x = position.x();
+		p.y = position.y();
 		p.z = 0.0;
+		line.points.push_back(p);
 
-		for(auto it = velocities.begin(); it != velocities.end(); ++it){
-			p.x += it->x() * step_size;
-			p.y += it->y() * step_size;
-			line.points.push_back(p);
-		}
-		lines.markers.push_back(line);
-		line.points.clear();
+		predict(velocity);
+
+		return position;
+	}
+
+	Eigen::Vector2d PathPredictor::predict(const Eigen::Vector2d& velocity)
+	{
+		geometry_msgs::Point p;
+
+		position.x() += velocity.x() * step_size;
+		position.y() += velocity.y() * step_size;
+
+		p.x = position.x();
+		p.y = position.y();
+
+		line.points.push_back(p);
+
+		return position;
 	}
 
 	// private

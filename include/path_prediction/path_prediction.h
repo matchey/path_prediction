@@ -12,13 +12,14 @@ namespace path_prediction{
 		public:
 		PathPredictor();
 		~PathPredictor();
-		void predict(const Eigen::Vector2d&, const std::vector<Eigen::Vector2d>&);
+		Eigen::Vector2d predict(const Eigen::Vector2d&, const Eigen::Vector2d&);
+		Eigen::Vector2d predict(const Eigen::Vector2d&);
 		void publish();
 
 		private:
-
 		ros::NodeHandle n;
 		ros::Publisher trajectory_publisher;
+		Eigen::Vector2d position;
 		visualization_msgs::MarkerArray lines;
 		visualization_msgs::Marker line;
 		double step_size; // [s]

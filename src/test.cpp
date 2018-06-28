@@ -10,27 +10,34 @@ int main(int argc, char** argv)
 
 	path_prediction::PathPredictor predictor;
 
-	Eigen::Vector2d init;
-	Eigen::Vector2d v;
-	std::vector<Eigen::Vector2d> vec;
+	Eigen::Vector2d init_position;
+	Eigen::Vector2d init_velocity;
+	Eigen::Vector2d position;
+	Eigen::Vector2d velocity;
 
-	init.x() = 0.2;
-	init.y() = 0.2;
+	init_position.x() = 0.0;
+	init_position.y() = 0.0;
 
-	v = init;
+	init_velocity.x() = 1.2;
+	init_velocity.y() = 1.2;
+
+	position = init_position;
 
 	while(ros::ok()){
-		for(int i = 0; i < 50; ++i){
-			vec.push_back(v);
-			v.x() += 0.05;
-		}
-		for(int i = 0; i < 5; ++i){
-			predictor.predict(v, vec);
-			v.x() -= 0.51;
-			v.y() -= 0.51;
+		// position = init_position;
+		position.x() = init_position.x();
+		position.y() += 0.001;
+		velocity = init_velocity;
+		for(int cluster = 0; cluster < 5; ++cluster){
+			predictor.predict(position, velocity);
+			for(int i = 0; i < 5; ++i){
+				position = predictor.predict(velocity);
+				velocity.x() += 0.05;
+				velocity.y() -= 0.02;
+			}
+			position.y() -= 0.28;
 		}
 		predictor.publish();
-		vec.clear();
 
 		// ros::spinOnce();
 		loop_rate.sleep();
