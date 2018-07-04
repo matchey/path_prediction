@@ -1,45 +1,87 @@
 
+#include <pcl/io/pcd_io.h>
+#include "normal_reaction_force/normal_reaction_force.h"
 #include "path_prediction/path_prediction.h"
+
+using namespace std;
+
+class TestPredictor{
+	public:
+	TestPredictor();
+	void process();
+
+	private:
+	void load_pcd();
+
+	// pcl::PointCloud<pcl::PointXYZINormal>::Ptr pc;
+	pcl::PointCloud<pcl::PointNormal>::Ptr pc;
+	normal_reaction_force::VectorField vf;
+	path_prediction::PathPredictor predictor;
+	normal_reaction_force::State4d own;
+	Eigen::Vector2d init_position;
+	Eigen::Vector2d init_velocity;
+};
+
+TestPredictor::TestPredictor()
+	// : pc(new pcl::PointCloud<pcl::PointXYZINormal>)
+	: pc(new pcl::PointCloud<pcl::PointNormal>)
+{
+	// init_position.x() = 3.0;
+	// init_position.y() = 0.0;
+	init_position.x() = -4.0;
+	init_position.y() = -2.0;
+
+	init_velocity.x() = 0.5;
+	init_velocity.y() = 1.5;
+
+	load_pcd();
+}
+
+void TestPredictor::load_pcd()
+{
+	// string filename = "cloud_49.pcd";
+	string filename = "obs.pcd";
+
+	if( pcl::io::loadPCDFile<pcl::PointNormal>(filename, *pc) == -1 ){
+		cout << "load error" << endl;
+		exit(1);
+	}
+
+	vf.setObstacles(pc);
+}
+
+void TestPredictor::process()
+{
+	Eigen::Vector2d position = init_position;
+	Eigen::Vector2d velocity = init_velocity;
+	
+	velocity *= -1;
+	own.position = position;
+	own.velocity = velocity;
+
+	vf.velocityConversion(own, velocity);
+	own.position = predictor.predict(position, velocity);
+	own.velocity = velocity;
+
+	for(int step = 0; step < 60; ++step){
+		vf.velocityConversion(own, velocity);
+		own.position = predictor.predict(velocity);
+		own.velocity = velocity;
+	}
+	predictor.publish();
+}
 
 int main(int argc, char** argv)
 {
 	ros::init(argc, argv, "test_path_prediction");
 
 	ros::NodeHandle n;
-	ros::Rate loop_rate(10);
+	ros::Rate loop_rate(1);
 
-	path_prediction::PathPredictor predictor;
-
-	Eigen::Vector2d init_position;
-	Eigen::Vector2d init_velocity;
-	Eigen::Vector2d position;
-	Eigen::Vector2d velocity;
-
-	init_position.x() = 0.0;
-	init_position.y() = 0.0;
-
-	init_velocity.x() = 1.2;
-	init_velocity.y() = 1.2;
-
-	position = init_position;
+	TestPredictor tp;
 
 	while(ros::ok()){
-		// position = init_position;
-		position.x() = init_position.x();
-		position.y() += 0.001;
-		velocity = init_velocity;
-		for(int cluster = 0; cluster < 5; ++cluster){
-			predictor.predict(position, velocity);
-			for(int i = 0; i < 5; ++i){
-				position = predictor.predict(velocity);
-				velocity.x() += 0.05;
-				velocity.y() -= 0.02;
-			}
-			position.y() -= 0.28;
-		}
-		predictor.publish();
-
-		// ros::spinOnce();
+		tp.process();
 		loop_rate.sleep();
 	}
 	
