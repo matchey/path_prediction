@@ -22,7 +22,7 @@ namespace path_prediction{
 			("/path_prediction/topic_name", topic_pub, "/trajectory_predicted");
 
 		ros::param::param<std::string>
-			("/path_prediction/frame_id", frame_id, "/map");
+			("/path_prediction/frame_id", frame_id, "/velodyne");
 
 		trajectory_publisher = n.advertise<visualization_msgs::MarkerArray>(topic_pub, 10);
 
