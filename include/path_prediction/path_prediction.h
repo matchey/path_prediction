@@ -24,6 +24,7 @@ namespace path_prediction{
 		visualization_msgs::Marker line;
 		double step_size; // [s]
 		static int id;
+		Eigen::Vector2d goal;
 	};
 } // namespace path_prediction
 
