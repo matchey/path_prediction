@@ -4,6 +4,8 @@
 #include "path_prediction/path_prediction.h"
 
 using namespace std;
+using std::cout;
+using std::endl;
 
 class TestPredictor{
 	public:

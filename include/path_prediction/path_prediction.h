@@ -8,6 +8,11 @@
 #include <Eigen/Core>
 
 namespace path_prediction{
+	struct NormalDistribution{
+		Eigen::Vector2d mu;
+		Eigen::Matrix4d sigma;
+	};
+
 	class PathPredictor{
 		public:
 		PathPredictor();
@@ -17,6 +22,8 @@ namespace path_prediction{
 		void publish();
 
 		private:
+		void goalEstimator();
+
 		ros::NodeHandle n;
 		ros::Publisher trajectory_publisher;
 		Eigen::Vector2d position;
@@ -24,7 +31,7 @@ namespace path_prediction{
 		visualization_msgs::Marker line;
 		double step_size; // [s]
 		static int id;
-		Eigen::Vector2d goal;
+		NormalDistribution goal;
 	};
 } // namespace path_prediction
 

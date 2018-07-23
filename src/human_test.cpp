@@ -9,6 +9,10 @@
 #include "path_prediction/path_prediction.h"
 
 using namespace std;
+// using std::cout;
+// using std::endl;
+// using std::string;
+// using std::vector;
 
 class TestPredictor{
 	public:
