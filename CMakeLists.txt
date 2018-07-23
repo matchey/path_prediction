@@ -173,7 +173,7 @@ SET(CMAKE_CXX_FLAGS "-std=c++11 -O2 -g -Wall ${CMAKE_CXX_FLAGS}")
 
 # add_executable(test_path_prediction src/test.cpp src/path_prediction.cpp)
 # target_link_libraries(test_path_prediction normal_reaction_force binarion ${catkin_LIBRARIES} ${PCL_LIBRARIES})
-add_executable(test_path_prediction src/human_test.cpp src/path_prediction.cpp)
+add_executable(test_path_prediction src/human_test.cpp src/direct_paths.cpp src/path_prediction.cpp)
 target_link_libraries(test_path_prediction normal_reaction_force binarion ${catkin_LIBRARIES} ${PCL_LIBRARIES})
 
 # add_executable(create_obs src/pc2obs.cpp)
