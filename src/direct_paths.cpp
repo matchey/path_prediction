@@ -40,11 +40,14 @@ namespace path_prediction{
 		lines.markers.clear();
 	}
 
-	void PathsDirector::predict(const visualization_msgs::MarkerArray::ConstPtr& humans)
+	void PathsDirector::predict(const visualization_msgs::MarkerArray::ConstPtr& humans,
+								const nrf::pcNormalPtr& pc)
 	{
 		geometry_msgs::Point p;
 		Eigen::Vector2d velocity;
 		// PathPredictor path;
+
+		vf.setObstacles(pc);
 
 		for(auto it = humans->markers.begin(); it != humans->markers.end(); ++it){
 			// paths[it->id] = path;
@@ -53,8 +56,8 @@ namespace path_prediction{
 								+ it->pose.orientation.x * it->pose.orientation.y),
 					1 - 2*(pow(it->pose.orientation.y, 2) + pow(it->pose.orientation.z, 2)));
 
-			normal_reaction_force::State4d own = {{it->pose.position.x, it->pose.position.y},
-												  {it->scale.x * cos(yaw), it->scale.x * sin(yaw)}};
+			nrf::State4d own = {{it->pose.position.x, it->pose.position.y},
+								{it->scale.x * cos(yaw), it->scale.x * sin(yaw)}};
 			vf.velocityConversion(own, velocity);
 			own.position = paths[it->id].predict(own.position, velocity);
 			own.velocity = velocity;

@@ -11,11 +11,13 @@
 
 namespace path_prediction{
 
+	namespace nrf = normal_reaction_force;
+
 	class PathsDirector{
 		public:
 		PathsDirector();
 		~PathsDirector();
-		void predict(const visualization_msgs::MarkerArray::ConstPtr&);
+		void predict(const visualization_msgs::MarkerArray::ConstPtr&, const nrf::pcNormalPtr&);
 		void publish();
 
 		private:
@@ -23,7 +25,7 @@ namespace path_prediction{
 		ros::NodeHandle n;
 		ros::Publisher trajectory_publisher;
 		std::map<int, PathPredictor> paths; // 走査遅いからmap使うのよくない?
-		normal_reaction_force::VectorField vf;
+		nrf::VectorField vf;
 		visualization_msgs::MarkerArray lines;
 		visualization_msgs::Marker line;
 	};

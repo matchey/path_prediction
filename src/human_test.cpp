@@ -28,10 +28,12 @@ class TestPredictor{
 	pcl::PointCloud<pcl::PointNormal>::Ptr pc;
 
 	path_prediction::PathsDirector paths;
+	bool isObstacle;
+	bool isHuman;
 };
 
 TestPredictor::TestPredictor()
-	: pc(new pcl::PointCloud<pcl::PointNormal>)
+	: pc(new pcl::PointCloud<pcl::PointNormal>), isObstacle(false), isHuman(false)
 {
 	sub_human = n.subscribe<visualization_msgs::MarkerArray>
 		                   ("/velocity_arrows", 1, &TestPredictor::humanCallback, this);
@@ -42,12 +44,19 @@ TestPredictor::TestPredictor()
 
 void TestPredictor::process()
 {
-	paths.publish();
+	if(isHuman){
+		paths.publish();
+	}
+	isObstacle = isHuman = false;
 }
 
 void TestPredictor::humanCallback(const visualization_msgs::MarkerArray::ConstPtr& msg)
 {
-	paths.predict(msg);
+	// paths.predict(msg);
+	if(isObstacle){
+		paths.predict(msg, pc);
+		isHuman = true;
+	}
 }
 
 void TestPredictor::obstacleCallback(const sensor_msgs::PointCloud2::ConstPtr& msg)
@@ -55,6 +64,7 @@ void TestPredictor::obstacleCallback(const sensor_msgs::PointCloud2::ConstPtr& m
 	// cout << "in obs cb" << endl;
 	pcl::fromROSMsg(*msg, *pc);
 	// vf.setObstacles(pc);
+	isObstacle = true;
 }
 
 int main(int argc, char** argv)
