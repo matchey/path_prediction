@@ -8,7 +8,7 @@
 namespace path_prediction{
 
 	PathPredictor::PathPredictor()
-		: emerged(false), observed(true)
+		: observed(false), emerged(false)
 	{
 		ros::param::param<double>
 			("/path_prediction/step_size", step_size, 0.05); // 積分時のΔx

@@ -19,6 +19,8 @@ namespace path_prediction{
 		Eigen::Vector2d predict(const Eigen::Vector2d&, const Eigen::Vector2d&);
 		Eigen::Vector2d predict(const Eigen::Vector2d&);
 
+		bool observed;
+
 		private:
 		void goalEstimator(const Eigen::Vector2d&);
 
@@ -27,7 +29,6 @@ namespace path_prediction{
 		double sigma_init; // [s]
 		NormalDistribution goal;
 		bool emerged;
-		bool observed;
 	};
 } // namespace path_prediction
 

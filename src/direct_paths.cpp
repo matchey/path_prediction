@@ -44,10 +44,10 @@ namespace path_prediction{
 	{
 		geometry_msgs::Point p;
 		Eigen::Vector2d velocity;
-		PathPredictor path;
+		// PathPredictor path;
 
 		for(auto it = humans->markers.begin(); it != humans->markers.end(); ++it){
-			paths[it->id] = path;
+			// paths[it->id] = path;
 			line.points.clear();
 			double yaw = atan2(2*(it->pose.orientation.w * it->pose.orientation.z
 								+ it->pose.orientation.x * it->pose.orientation.y),
@@ -56,7 +56,7 @@ namespace path_prediction{
 			normal_reaction_force::State4d own = {{it->pose.position.x, it->pose.position.y},
 												  {it->scale.x * cos(yaw), it->scale.x * sin(yaw)}};
 			vf.velocityConversion(own, velocity);
-			own.position = path.predict(own.position, velocity);
+			own.position = paths[it->id].predict(own.position, velocity);
 			own.velocity = velocity;
 
 			line.id = it->id;
@@ -69,7 +69,7 @@ namespace path_prediction{
 
 			for(int step = 0; step < 40; ++step){
 				vf.velocityConversion(own, velocity);
-				own.position = path.predict(velocity);
+				own.position = paths[it->id].predict(velocity);
 				own.velocity = velocity;
 				p.x = own.position.x();
 				p.y = own.position.y();
@@ -77,6 +77,16 @@ namespace path_prediction{
 			}
 
 			lines.markers.push_back(line);
+		}
+
+		auto it = paths.begin();
+		while(it != paths.end()){
+			if(!it->second.observed){
+				paths.erase(it++);
+			}else{
+				it->second.observed = false;
+				++it;
+			}
 		}
 	}
 
