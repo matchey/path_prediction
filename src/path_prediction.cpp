@@ -11,7 +11,8 @@ namespace path_prediction{
 		: observed(false), emerged(false)
 	{
 		ros::param::param<double>
-			("/path_prediction/step_size", step_size, 0.05); // 積分時のΔx
+			("/path_prediction/step_size", step_size, 0.1); // 積分時のΔx
+			// ("/path_prediction/step_size", step_size, 0.05); // 積分時のΔx
 
 		ros::param::param<double>
 			("/path_prediction/sigma_init", sigma_init, 1.0);// 3次元配列??
@@ -23,7 +24,7 @@ namespace path_prediction{
 										   const Eigen::Vector2d& velocity)
 	{
 		observed = true;
-		goalEstimator(velocity);
+		// goalEstimator(velocity);
 
 		position = init_position;
 		predict(velocity);

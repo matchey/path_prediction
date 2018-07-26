@@ -46,6 +46,7 @@ void TestPredictor::process()
 {
 	if(isHuman){
 		paths.publish();
+		// cout << "in process" << endl;
 	}
 	isObstacle = isHuman = false;
 }
@@ -56,6 +57,7 @@ void TestPredictor::humanCallback(const visualization_msgs::MarkerArray::ConstPt
 	if(isObstacle){
 		paths.predict(msg, pc);
 		isHuman = true;
+		// cout << "in human" << endl;
 	}
 }
 
@@ -77,9 +79,9 @@ int main(int argc, char** argv)
 	TestPredictor tp;
 
 	while(ros::ok()){
-		// tp.process();
-		// ros::spinOnce();
-		// loop_rate.sleep();
+		tp.process();
+		ros::spinOnce();
+		loop_rate.sleep();
 	}
 	
 	return 0;

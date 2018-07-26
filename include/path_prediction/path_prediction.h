@@ -9,7 +9,7 @@ namespace path_prediction{
 
 	struct NormalDistribution{
 		Eigen::Vector2d mu;
-		Eigen::Matrix4d sigma;
+		Eigen::Matrix2d sigma;
 	};
 
 	class PathPredictor{
