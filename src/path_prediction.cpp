@@ -56,7 +56,6 @@ namespace path_prediction{
 		goal.mu << velocity.x(), velocity.y();
 		goal.sigma << 1.0, 1.0,
 					  1.0, 1.0;
-
 	}
 
 } // namespace path_prediction
