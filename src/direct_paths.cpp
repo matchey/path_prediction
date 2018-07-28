@@ -60,6 +60,7 @@ namespace path_prediction{
 								{it->scale.x * cos(yaw), it->scale.x * sin(yaw)}};
 			vf.velocityConversion(own, velocity);
 			own.position = paths[it->id].predict(own.position, velocity);
+			// paths[it->id].getGoal(velocity);
 			own.velocity = velocity;
 
 			line.id = it->id;
@@ -73,6 +74,7 @@ namespace path_prediction{
 			for(int step = 0; step < 40; ++step){
 				vf.velocityConversion(own, velocity);
 				own.position = paths[it->id].predict(velocity);
+				paths[it->id].getGoal(velocity);
 				own.velocity = velocity;
 				p.x = own.position.x();
 				p.y = own.position.y();
