@@ -39,7 +39,7 @@ TestPredictor::TestPredictor()
 		                   ("/velocity_arrows", 1, &TestPredictor::humanCallback, this);
 
 	sub_obs = n.subscribe<sensor_msgs::PointCloud2>
-		                   ("/rm_ground", 1, &TestPredictor::obstacleCallback, this);
+		                   ("/rm_cluster/removed_points", 1, &TestPredictor::obstacleCallback, this);
 }
 
 void TestPredictor::process()
@@ -54,6 +54,7 @@ void TestPredictor::process()
 void TestPredictor::humanCallback(const visualization_msgs::MarkerArray::ConstPtr& msg)
 {
 	// paths.predict(msg);
+	isObstacle = true;
 	if(isObstacle){
 		paths.predict(msg, pc);
 		isHuman = true;

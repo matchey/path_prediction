@@ -31,7 +31,7 @@ namespace path_prediction{
 		double step_size; // [s]
 		double sigma_init; // [s]
 		NormalDistribution goal;
-		bool emerged;
+		int emerged;
 	};
 } // namespace path_prediction
 

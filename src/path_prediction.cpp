@@ -8,10 +8,10 @@
 namespace path_prediction{
 
 	PathPredictor::PathPredictor()
-		: observed(false), emerged(false)
+		: observed(false), emerged(0)
 	{
 		ros::param::param<double>
-			("/path_prediction/step_size", step_size, 0.1); // 積分時のΔx
+			("/path_prediction/step_size", step_size, 0.2); // 積分時のΔx[s]
 			// ("/path_prediction/step_size", step_size, 0.05); // 積分時のΔx
 
 		ros::param::param<double>
@@ -56,24 +56,26 @@ namespace path_prediction{
 
 	void PathPredictor::getGoal(Eigen::Vector2d& velocity)
 	{
-		velocity = goal.mu;
+		if(emerged > 10){
+			velocity = goal.mu;
+		}
 	}
 
 	// private
 	void PathPredictor::goalEstimator(const Eigen::Vector2d& velocity)
 	{
-		Eigen::Matrix2d tau;
-		tau << 0.5, 0.0,
-		       0.0, 0.5;
-
 		if(!emerged){// 最初の観測なら
 			goal.mu = velocity;
 			goal.sigma <<  0.1, -0.5,
 						  -0.5,  0.1; // paramから与える
-			emerged = true;
+			++emerged;
 
 			return;
 		}
+
+		Eigen::Matrix2d tau;
+		tau << 0.5, 0.0,
+		       0.0, 0.5;
 
 		Eigen::Matrix2d k = (goal.sigma.inverse() + tau.inverse()).inverse();
 
@@ -83,6 +85,7 @@ namespace path_prediction{
 		goal.sigma = k;
 		// goal.sigma << 0.0, 1.0,
 		// 			  1.0, 0.0; // x, yを独立として計算 (x^2 + y^2 = 1 なのに..??)
+		++emerged;
 	}
 
 } // namespace path_prediction
