@@ -4,13 +4,15 @@
 //
 
 #include <geometry_msgs/Point.h>
+#include "normal_reaction_force/normal_reaction_force.h"
 #include "path_prediction/path_prediction.h"
 #include "path_prediction/direct_paths.h"
 
 namespace path_prediction{
 
+	namespace nrf = normal_reaction_force;
+
 	PathsDirector::PathsDirector()
-		// : obstacles(new nrf::pcNormal)
 	{
 		std::string frame_id;
 		std::string topic_pub;
@@ -22,7 +24,7 @@ namespace path_prediction{
 			("/path_prediction/frame_id", frame_id, "/velodyne");
 
 		ros::param::param<double>
-			("/path_prediction/step_num", step_num, 40);
+			("/path_prediction/step_size", step_size, 40);
 
 		trajectory_publisher = n.advertise<vmsgs::MarkerArray>(topic_pub, 10);
 
@@ -45,30 +47,19 @@ namespace path_prediction{
 		lines.markers.clear();
 	}
 
-	void PathsDirector::predict(const vmsgs::MarkerArray::ConstPtr& humans,
-								const nrf::pcNormalPtr& pc)
+	void PathsDirector::createPaths(const pcNormalPtr& pc,
+								    const vmsgs::MarkerArray::ConstPtr& humans)
 	{
-		geometry_msgs::Point p;
-		Eigen::Vector2d velocity;
-		// PathPredictor path;
+		nrf::VectorField vf;
 
-		// vf.setHumans(humans);
 		vf.setObstacles(pc);
+		vf.setHumans(humans);
+
+		geometry_msgs::Point p;
+		p.z = 0.0;
 
 		for(auto it = humans->markers.begin(); it != humans->markers.end(); ++it){
-			// paths[it->id] = path;
 			line.points.clear();
-			double yaw = atan2(2*(it->pose.orientation.w * it->pose.orientation.z
-								+ it->pose.orientation.x * it->pose.orientation.y),
-					1 - 2*(pow(it->pose.orientation.y, 2) + pow(it->pose.orientation.z, 2)));
-
-			nrf::State4d own = {{it->pose.position.x, it->pose.position.y},
-								{it->scale.x * cos(yaw), it->scale.x * sin(yaw)}};
-			// vf.velocityConversion(own, velocity);
-			velocity = own.velocity;
-			own.position = paths[it->id].predict(own.position, velocity);
-			paths[it->id].getGoal(velocity);
-			own.velocity = velocity;
 
 			line.id = it->id;
 
@@ -80,16 +71,9 @@ namespace path_prediction{
 
 			p.x = own.position.x();
 			p.y = own.position.y();
-			p.z = 0.0;
 			line.points.push_back(p);
 
-			for(int step = 0; step < step_num; ++step){
-				// if(step > 30){
-				// 	vf.velocityConversion(own, velocity);
-				// }else{
-				// 	velocity = own.velocity;
-				// }
-				vf.velocityConversion(own, velocity);
+			for(int step = 0; step < step_size; ++step){
 				own.position = paths[it->id].predict(velocity);
 				paths[it->id].getGoal(velocity);
 				own.velocity = velocity;
@@ -113,14 +97,6 @@ namespace path_prediction{
 	}
 
 	// private
-	// void PathsDirector::createObstacles(const vmsgs::MarkerArray::ConstPtr& humans)
-	// {
-	// 	const double radius = 0.15;
-	// 	nrf::pcNormalPtr human (new nrf::pcNormal);
-    //
-	// 	for(auto arrow = humans->markers.begin(); arrow != humans->markers.end(); ++arrow){
-	// 	}
-	// }
 
 } // namespace path_prediction
 

@@ -3,6 +3,7 @@
 // goal方位の推定とpathの生成
 //
 
+#include <ros/ros.h>
 #include "path_prediction/path_prediction.h"
 
 namespace path_prediction{
@@ -11,8 +12,8 @@ namespace path_prediction{
 		: observed(false), emerged(0)
 	{
 		ros::param::param<double>
-			("/path_prediction/step_size", step_size, 0.2); // 積分時のΔx[s]
-			// ("/path_prediction/step_size", step_size, 0.05); // 積分時のΔx
+			("/path_prediction/dt", dt, 0.2); // 積分時のΔx[s]
+			// ("/path_prediction/dt", dt, 0.05); // 積分時のΔx
 
 		ros::param::param<double>
 			("/path_prediction/sigma_init", sigma_init, 1.0);// 3次元配列??
@@ -37,8 +38,8 @@ namespace path_prediction{
 	{
 		// goalEstimator(velocity);
 
-		position.x() += velocity.x() * step_size;
-		position.y() += velocity.y() * step_size;
+		position.x() += velocity.x() * dt;
+		position.y() += velocity.y() * dt;
 		// predict();
 
 		return position;
@@ -46,10 +47,10 @@ namespace path_prediction{
 
 	Eigen::Vector2d PathPredictor::predict()
 	{
-		// position.x() += goal.mu.x() * step_size;
-		// position.y() += goal.mu.y() * step_size;
+		// position.x() += goal.mu.x() * dt;
+		// position.y() += goal.mu.y() * dt;
 
-		position += step_size * goal.mu;
+		position += dt * goal.mu;
 
 		return position;
 	}

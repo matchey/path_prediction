@@ -1,11 +1,17 @@
 
-#include <pcl/io/pcd_io.h>
-#include "normal_reaction_force/normal_reaction_force.h"
-#include "path_prediction/path_prediction.h"
+// path predictionを試す
+// 開発途中のデバッグ用
 
-using namespace std;
-using std::cout;
-using std::endl;
+#include <sensor_msgs/PointCloud2.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl_conversions/pcl_conversions.h>
+#include "path_prediction/direct_paths.h"
+
+// using namespace std;
+// using std::cout;
+// using std::endl;
+// using std::string;
+// using std::vector;
 
 class TestPredictor{
 	public:
@@ -13,77 +19,69 @@ class TestPredictor{
 	void process();
 
 	private:
-	void load_pcd();
+	void humanCallback(const visualization_msgs::MarkerArray::ConstPtr&);
+	void obstacleCallback(const sensor_msgs::PointCloud2::ConstPtr&);
 
-	// pcl::PointCloud<pcl::PointXYZINormal>::Ptr pc;
+	ros::NodeHandle n;
+	ros::Subscriber sub_human;
+	ros::Subscriber sub_obs;
 	pcl::PointCloud<pcl::PointNormal>::Ptr pc;
-	normal_reaction_force::VectorField vf;
-	path_prediction::PathPredictor predictor;
-	normal_reaction_force::State4d own;
-	Eigen::Vector2d init_position;
-	Eigen::Vector2d init_velocity;
+
+	path_prediction::PathsDirector paths;
+	bool isObstacle;
+	bool isHuman;
 };
 
 TestPredictor::TestPredictor()
-	// : pc(new pcl::PointCloud<pcl::PointXYZINormal>)
-	: pc(new pcl::PointCloud<pcl::PointNormal>)
+	: pc(new pcl::PointCloud<pcl::PointNormal>), isObstacle(false), isHuman(false)
 {
-	// init_position.x() = 3.0;
-	// init_position.y() = 0.0;
-	init_position.x() = -4.0;
-	init_position.y() = -2.0;
+	sub_human = n.subscribe<visualization_msgs::MarkerArray>
+		                   ("/velocity_arrows", 1, &TestPredictor::humanCallback, this);
 
-	init_velocity.x() = 0.5;
-	init_velocity.y() = 1.5;
-
-	load_pcd();
-}
-
-void TestPredictor::load_pcd()
-{
-	// string filename = "cloud_49.pcd";
-	string filename = "obs.pcd";
-
-	if( pcl::io::loadPCDFile<pcl::PointNormal>(filename, *pc) == -1 ){
-		cout << "load error" << endl;
-		exit(1);
-	}
-
-	vf.setObstacles(pc);
+	sub_obs = n.subscribe<sensor_msgs::PointCloud2>
+		                   ("/rm_cluster/removed_points", 1, &TestPredictor::obstacleCallback, this);
 }
 
 void TestPredictor::process()
 {
-	Eigen::Vector2d position = init_position;
-	Eigen::Vector2d velocity = init_velocity;
-	
-	velocity *= -1;
-	own.position = position;
-	own.velocity = velocity;
-
-	vf.velocityConversion(own, velocity);
-	own.position = predictor.predict(position, velocity);
-	own.velocity = velocity;
-
-	for(int step = 0; step < 60; ++step){
-		vf.velocityConversion(own, velocity);
-		own.position = predictor.predict(velocity);
-		own.velocity = velocity;
+	if(isHuman){
+		paths.publish();
+		// cout << "in process" << endl;
 	}
-	predictor.publish();
+	isObstacle = isHuman = false;
+}
+
+void TestPredictor::humanCallback(const visualization_msgs::MarkerArray::ConstPtr& msg)
+{
+	// paths.predict(msg);
+	isObstacle = true;
+	if(isObstacle){
+		paths.createPaths(msg, pc);
+		isHuman = true;
+		// cout << "in human" << endl;
+	}
+}
+
+void TestPredictor::obstacleCallback(const sensor_msgs::PointCloud2::ConstPtr& msg)
+{
+	// cout << "in obs cb" << endl;
+	pcl::fromROSMsg(*msg, *pc);
+	// vf.setObstacles(pc);
+	isObstacle = true;
 }
 
 int main(int argc, char** argv)
 {
-	ros::init(argc, argv, "test_path_prediction");
+	ros::init(argc, argv, "test_human_path_prediction");
 
 	ros::NodeHandle n;
-	ros::Rate loop_rate(1);
+	ros::Rate loop_rate(10);
 
 	TestPredictor tp;
 
 	while(ros::ok()){
 		tp.process();
+		ros::spinOnce();
 		loop_rate.sleep();
 	}
 	
