@@ -8,6 +8,10 @@
 #include <Eigen/Core>
 #include <pcl/point_cloud.h>
 
+namespace normal_reaction_force{
+	class State4d;
+}
+
 namespace path_prediction{
 
 	typedef pcl::PointNormal PointN;
@@ -18,6 +22,8 @@ namespace path_prediction{
 
 	class PathPredictor;
 
+	namespace nrf = normal_reaction_force;
+
 	class PathsDirector{
 		public:
 		PathsDirector();
@@ -26,6 +32,7 @@ namespace path_prediction{
 		void publish();
 
 		private:
+		void setHumans(const vmsgs::MarkerArray::ConstPtr&);
 
 		ros::NodeHandle n;
 		ros::Publisher trajectory_publisher;
@@ -34,6 +41,8 @@ namespace path_prediction{
 
 		double step_size; // 何ステップ先まで計算するか [回]
 		std::map<int, PathPredictor> paths; // 走査遅いからmap使うのよくない?
+		std::vector<nrf::State4d> humans;
+		unsigned nhumans;
 	};
 
 } // namespace path_prediction

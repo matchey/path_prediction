@@ -28,27 +28,15 @@ namespace path_prediction{
 		goalEstimator(velocity);
 
 		position = init_position;
-		predict(velocity);
-		// predict();
-
-		return position;
-	}
-
-	Eigen::Vector2d PathPredictor::predict(const Eigen::Vector2d& velocity)
-	{
-		// goalEstimator(velocity);
-
-		position.x() += velocity.x() * dt;
-		position.y() += velocity.y() * dt;
-		// predict();
+		// predict(velocity);
 
 		return position;
 	}
 
 	Eigen::Vector2d PathPredictor::predict()
 	{
-		// position.x() += goal.mu.x() * dt;
-		// position.y() += goal.mu.y() * dt;
+		// position.x() += velocity.x() * dt;
+		// position.y() += velocity.y() * dt;
 
 		position += dt * goal.mu;
 

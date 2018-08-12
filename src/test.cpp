@@ -56,7 +56,7 @@ void TestPredictor::humanCallback(const visualization_msgs::MarkerArray::ConstPt
 	// paths.predict(msg);
 	isObstacle = true;
 	if(isObstacle){
-		paths.createPaths(msg, pc);
+		paths.createPaths(pc, msg);
 		isHuman = true;
 		// cout << "in human" << endl;
 	}
