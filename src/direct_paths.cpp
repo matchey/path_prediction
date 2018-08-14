@@ -62,15 +62,13 @@ namespace path_prediction{
 		}
 
 		for(unsigned step = 0; step < step_size; ++step){
-			for(auto it = arrays->markers.begin(); it != arrays->markers.end(); ++it){
+			for(unsigned i = 0; i < nhumans; ++i){
+				humans[i].position = paths[arrays->markers[i].id].predict();
+				paths[arrays->markers[i].id].getGoal(humans[i].velocity);
 
-				// own.position = paths[it->id].predict(velocity);
-				// paths[it->id].getGoal(velocity);
-				// own.velocity = velocity;
-                //
-				// p.x = own.position.x();
-				// p.y = own.position.y();
-				// line.points.push_back(p);
+				p.x = humans[i].position.x();
+				p.y = humans[i].position.y();
+				lines.markers[i].points.push_back(p);
 			}
 
 		}

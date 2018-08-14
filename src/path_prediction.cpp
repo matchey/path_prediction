@@ -28,7 +28,7 @@ namespace path_prediction{
 		goalEstimator(velocity);
 
 		position = init_position;
-		// predict(velocity);
+		predict();
 
 		return position;
 	}
