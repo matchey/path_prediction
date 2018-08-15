@@ -66,7 +66,6 @@ void TestPredictor::obstacleCallback(const sensor_msgs::PointCloud2::ConstPtr& m
 {
 	// cout << "in obs cb" << endl;
 	pcl::fromROSMsg(*msg, *pc);
-	// vf.setObstacles(pc);
 	isObstacle = true;
 }
 

@@ -32,7 +32,8 @@ namespace path_prediction{
 		line.pose.orientation.w = 1.0;
 		line.type = vmsgs::Marker::LINE_STRIP;
 		line.scale.x = 0.02;
-		// line.color.a = 1.0;
+		line.color.a = 1.0;
+		// line.color.r = 0.0;
 		// line.color.g = 0.8;
 		// line.color.b = 0.9;
 	}
@@ -63,12 +64,14 @@ namespace path_prediction{
 
 		for(unsigned step = 0; step < step_size; ++step){
 			for(unsigned i = 0; i < nhumans; ++i){
-				humans[i].position = paths[arrays->markers[i].id].predict();
-				paths[arrays->markers[i].id].getGoal(humans[i].velocity);
+				humans[i].position = paths[arrays->markers[i].id].predict(humans[i].velocity);
+				// paths[arrays->markers[i].id].getGoal(humans[i].velocity);
+				vf.velocityConversion(humans);
 
 				p.x = humans[i].position.x();
 				p.y = humans[i].position.y();
 				lines.markers[i].points.push_back(p);
+				// std::cout << "lines.size : " << lines.markers.size() << std::endl;
 			}
 
 		}

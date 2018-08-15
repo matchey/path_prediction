@@ -17,7 +17,7 @@ namespace path_prediction{
 		PathPredictor();
 		~PathPredictor();
 		Eigen::Vector2d predict(const Eigen::Vector2d&, const Eigen::Vector2d&);
-		Eigen::Vector2d predict();
+		Eigen::Vector2d predict(const Eigen::Vector2d&);
 		void getGoal(Eigen::Vector2d&); // 推定された目標方位を返す
 
 		bool observed; // predictされたか
