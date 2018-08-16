@@ -35,10 +35,8 @@ namespace path_prediction{
 
 	Eigen::Vector2d PathPredictor::predict(const Eigen::Vector2d& velocity)
 	{
-		// position.x() += velocity.x() * dt;
-		// position.y() += velocity.y() * dt;
+		goalEstimator(velocity);
 
-		// position += dt * goal.mu;
 		position += velocity * dt;
 
 		return position;
@@ -47,7 +45,7 @@ namespace path_prediction{
 	void PathPredictor::getGoal(Eigen::Vector2d& velocity)
 	{
 		if(emerged > 10){
-			velocity = goal.mu;
+			velocity = 0.64*goal.mu + 0.36*velocity;
 		}
 	}
 
@@ -56,16 +54,16 @@ namespace path_prediction{
 	{
 		if(!emerged){// 最初の観測なら
 			goal.mu = velocity;
-			goal.sigma <<  0.1, -0.5,
-						  -0.5,  0.1; // paramから与える
+			goal.sigma <<  0.0001, -0.5,
+						   -0.5, 0.0001; // paramから与える
 			++emerged;
 
 			return;
 		}
 
 		Eigen::Matrix2d tau;
-		tau << 0.5, 0.0,
-		       0.0, 0.5;
+		tau << 0.9, 0.0,
+		       0.0, 0.9;
 
 		Eigen::Matrix2d k = (goal.sigma.inverse() + tau.inverse()).inverse();
 

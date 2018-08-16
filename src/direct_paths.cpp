@@ -64,9 +64,9 @@ namespace path_prediction{
 
 		for(unsigned step = 0; step < step_size; ++step){
 			for(unsigned i = 0; i < nhumans; ++i){
-				humans[i].position = paths[arrays->markers[i].id].predict(humans[i].velocity);
-				// paths[arrays->markers[i].id].getGoal(humans[i].velocity);
 				vf.velocityConversion(humans);
+				humans[i].position = paths[arrays->markers[i].id].predict(humans[i].velocity);
+				paths[arrays->markers[i].id].getGoal(humans[i].velocity);
 
 				p.x = humans[i].position.x();
 				p.y = humans[i].position.y();
