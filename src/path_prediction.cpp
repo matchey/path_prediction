@@ -62,8 +62,8 @@ namespace path_prediction{
 		}
 
 		Eigen::Matrix2d tau;
-		tau << 0.9, 0.0,
-		       0.0, 0.9;
+		tau << 0.999, 0.0,
+		       0.0, 0.999;
 
 		Eigen::Matrix2d k = (goal.sigma.inverse() + tau.inverse()).inverse();
 
