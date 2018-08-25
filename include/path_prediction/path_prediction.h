@@ -29,7 +29,13 @@ namespace path_prediction{
 		double dt; // 積分時のΔt[s]
 		double sigma_init; // 目標方位分布の初期分散
 		NormalDistribution goal; // 目標方位
+
 		int emerged; // 何回観測されたか
+		const int NSAVE;
+		std::vector<Eigen::Vector2d> velocities;
+		int counter;
+		bool is_set;
+		Eigen::Vector2d velocity_sum;
 	};
 } // namespace path_prediction
 

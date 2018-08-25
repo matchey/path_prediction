@@ -67,19 +67,7 @@ namespace path_prediction{
 
 		for(unsigned step = 0; step < step_size; ++step){
 			for(unsigned i = 0; i < nhumans; ++i){
-				if(vf.velocityConversion(humans) && !is_curved[i]){
-					velocity_curved = humans[i].velocity;
-					is_curved[i] = true;
-					lines.markers.clear();
-					setHumans(arrays);
-					for(unsigned j = 0; j < nhumans; ++j){
-						paths[arrays->markers[j].id].predict(humans[j].position, humans[j].velocity);
-					}
-					// humans[i].velocity = 0.9 * velocity_curved + 0.1 * humans[i].velocity;
-					humans[i].velocity = velocity_curved;
-					step = 0;
-					break;
-				}
+				vf.velocityConversion(humans);
 				humans[i].position = paths[arrays->markers[i].id].predict(humans[i].velocity);
 				paths[arrays->markers[i].id].getGoal(humans[i].velocity);
 
