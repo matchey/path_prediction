@@ -19,7 +19,7 @@ namespace path_prediction{
 			("/path_prediction/topic_name", topic_pub, "/trajectory_predicted");
 
 		ros::param::param<std::string>
-			("/path_prediction/frame_id", frame_id, "/velodyne");
+			("/path_prediction/frame_id", frame_id, "/map");
 
 		ros::param::param<double>
 			("/path_prediction/step_size", step_size, 40);
