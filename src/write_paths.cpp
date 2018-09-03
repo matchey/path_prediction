@@ -12,7 +12,7 @@ using std::string;
 // using std::vector;
 
 class PathsWriter{
-	typedef std::vector<visualization_msgs::MarkerArray> Path_t;
+	// typedef std::vector<visualization_msgs::MarkerArray> Path_t;
 
 	public:
 	PathsWriter();
@@ -26,7 +26,8 @@ class PathsWriter{
 	ros::NodeHandle n;
 	ros::Subscriber sub_human;
 	ros::Subscriber sub_paths;
-	std::map<int, Path_t> paths;
+	// std::map<int, Path_t> trajectory_gt; // ground_truth
+	visualization_msgs::MarkerArray paths;
 };
 
 PathsWriter::PathsWriter()
@@ -42,24 +43,30 @@ void PathsWriter::process()
 {
 }
 
-void PathsWriter::humanCallback(const visualization_msgs::MarkerArray::ConstPtr& msg)
+void PathsWriter::humanCallback(const visualization_msgs::MarkerArray::ConstPtr& msgs)
 {
 }
 
-void PathsWriter::predictedPathCallback(const visualization_msgs::MarkerArray::ConstPtr& msg)
+void PathsWriter::predictedPathCallback(const visualization_msgs::MarkerArray::ConstPtr& msgs)
 {
 	// 10Hzで40step (4秒間)
+	// for(auto it = msg->markers.begin(); it != msg->markers.end(); ++it){
+	// }
+	paths = *msgs;
+	write_csv();
 }
 
-void write_csv()
+void PathsWriter::write_csv()
 {
 	const string filename = "predected_paths.csv";
-	std::ofstream ofs(filename);
+	std::ofstream ofs(filename); // 追記にしないと最後のしか残らない
 
-	// for(){
-	// 	ofs << 
-	// }
-	ofs << endl;
+	for(auto it = paths.markers.begin(); it != paths.markers.end(); ++it){
+		ofs << "id," << it->id << endl;
+		for(auto points = it->points.begin(); points != it->points.end(); ++points){
+			ofs << points->x << ", " << points->y << endl;
+		}
+	}
 
 	ofs.close();
 }
