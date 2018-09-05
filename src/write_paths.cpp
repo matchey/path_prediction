@@ -6,7 +6,7 @@
 #include <visualization_msgs/MarkerArray.h>
 #include <fstream>
 
-// using std::cout;
+using std::cout;
 using std::endl;
 using std::string;
 // using std::vector;
@@ -28,10 +28,15 @@ class PathsWriter{
 	ros::Subscriber sub_paths;
 	// std::map<int, Path_t> trajectory_gt; // ground_truth
 	visualization_msgs::MarkerArray paths;
+	ros::Time start_time;
+	bool is_begin;
 };
 
 PathsWriter::PathsWriter()
+	: is_begin(false)
 {
+	// start_time = ros::Time::now();
+
 	sub_human = n.subscribe<visualization_msgs::MarkerArray>
 		                   ("/velocity_arrows", 1, &PathsWriter::humanCallback, this);
 
@@ -58,17 +63,43 @@ void PathsWriter::predictedPathCallback(const visualization_msgs::MarkerArray::C
 
 void PathsWriter::write_csv()
 {
-	const string filename = "predected_paths.csv";
-	std::ofstream ofs(filename); // 追記にしないと最後のしか残らない
-
-	for(auto it = paths.markers.begin(); it != paths.markers.end(); ++it){
-		ofs << "id," << it->id << endl;
-		for(auto points = it->points.begin(); points != it->points.end(); ++points){
-			ofs << points->x << ", " << points->y << endl;
-		}
+	// const string filename = "predected_paths.csv";
+	// string filename;
+	// std::ofstream ofs(filename); // 追記にしないと最後のしか残らない->closeしなければいい
+	if(!is_begin){
+		start_time = ros::Time::now();
+		is_begin = true;
 	}
 
-	ofs.close();
+	double d;
+	int i;
+	std::stringstream ss;
+	ss << (ros::Time::now() - start_time).toSec();
+	ss >> i >> d;
+	// cout << "int:    " << i << endl;
+	// cout << "double: " << d << endl;
+	// cout << "ss:     " << ss.str() << endl;
+	string filename = std::to_string(i) + "_" + std::to_string(d).substr(2, 4);
+	
+	for(auto it = paths.markers.begin(); it != paths.markers.end(); ++it){
+		string dirname = std::to_string(it->id);
+		string sys_cmd = "mkdir -p pr/" + dirname;
+		system(sys_cmd.c_str());
+		filename = "pr/" + dirname + "/" + filename + ".csv";
+		std::ofstream ofs(filename);
+		// ofs << "id," << it->id << endl;
+		// for(auto points = it->points.begin(); points != it->points.end(); ++points){
+		// 	ofs << points->x << ", ";
+		// }
+		// ofs << endl;
+		// for(auto points = it->points.begin(); points != it->points.end(); ++points){
+		// 	ofs << points->y << ", ";
+		// }
+		for(auto points = it->points.begin(); points != it->points.end(); ++points){
+			ofs << points->x << "," << points->y << endl;
+		}
+		ofs.close();
+	}
 }
 
 int main(int argc, char** argv)
