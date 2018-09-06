@@ -97,7 +97,7 @@ namespace path_prediction{
 		p.z = 0.0;
 
 		humans.clear();
-		lines.markers.clear();
+		// lines.markers.clear();
 
 		nhumans = 0;
 		for(auto it = arrays->markers.begin(); it != arrays->markers.end(); ++it){
