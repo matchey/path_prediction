@@ -11,7 +11,7 @@ timestamp=$2
 
 if [ ! -e gt/${id}/${timestamp}.csv ] || [ ! -e pr/${id}/${timestamp}.csv ]; then
 	echo coudnt find file
-	exit
+	exit 1
 fi
 
 sfile="gt_pr.xlsx"
