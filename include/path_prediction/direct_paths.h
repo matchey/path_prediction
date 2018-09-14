@@ -38,9 +38,6 @@ namespace path_prediction{
 		ros::Publisher trajectory_publisher;
 		vmsgs::MarkerArray lines;
 		vmsgs::Marker line;
-		// ros::Publisher markers_del_publisher;
-		// vmsgs::MarkerArray delall;
-		// vmsgs::Marker del_id;
 
 		double step_size; // 何ステップ先まで計算するか [回]
 		std::map<int, PathPredictor> paths; // 走査遅いからmap使うのよくない?

@@ -34,39 +34,16 @@ namespace path_prediction{
 		line.type = vmsgs::Marker::LINE_STRIP;
 		line.scale.x = 0.02;
 		line.color.a = 1.0;
-
 		// line.color.r = 0.0;
 		// line.color.g = 0.8;
 		// line.color.b = 0.9;
-		
-		// del_id.header.frame_id = frame_id;
-		// del_id.ns = "delall_trajectory";
-		// del_id.action = vmsgs::Marker::DELETE;
-		// del_id.pose.orientation.w = 1.0;
-		// del_id.type = vmsgs::Marker::LINE_STRIP;
-		// del_id.scale.x = 0.02;
-		// del_id.color.a = 1.0;
+		line.lifetime = ros::Duration(0.4);
 	}
 
 	PathsDirector::~PathsDirector() {}
 
 	void PathsDirector::publish()
 	{
-		static int cnt = 0;
-		ros::Publisher deleteall = n.advertise<vmsgs::Marker>("deleteall", 1);
-		vmsgs::Marker delall;
-		delall.header.frame_id = "/map";
-		delall.ns = "predicted_trajectory";
-		delall.pose.orientation.w = 1.0;
-		delall.type = vmsgs::Marker::LINE_STRIP;
-		// if(cnt){
-		// 	delall.action = vmsgs::Marker::ADD;
-		// }else{
-		// 	delall.action = vmsgs::Marker::DELETEALL;
-		// }
-		delall.action = vmsgs::Marker::DELETEALL;
-		deleteall.publish(delall);
-
 		trajectory_publisher.publish(lines);
 		lines.markers.clear();
 	}
