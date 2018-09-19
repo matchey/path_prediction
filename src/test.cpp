@@ -46,7 +46,6 @@ void TestPredictor::process()
 {
 	if(isHuman){
 		paths.publish();
-		// cout << "in process" << endl;
 	}
 	isObstacle = isHuman = false;
 }
@@ -58,13 +57,11 @@ void TestPredictor::humanCallback(const visualization_msgs::MarkerArray::ConstPt
 	if(isObstacle){
 		paths.createPaths(pc, msg);
 		isHuman = true;
-		// cout << "in human" << endl;
 	}
 }
 
 void TestPredictor::obstacleCallback(const sensor_msgs::PointCloud2::ConstPtr& msg)
 {
-	// cout << "in obs cb" << endl;
 	pcl::fromROSMsg(*msg, *pc);
 	isObstacle = true;
 }
