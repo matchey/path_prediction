@@ -25,7 +25,6 @@ namespace path_prediction{
 			("/path_prediction/step_size", step_size, 40);
 
 		trajectory_publisher = n.advertise<vmsgs::MarkerArray>(topic_pub, 10);
-		// markers_del_publisher = n.advertise<vmsgs::MarkerArray>("delold", 1);
 
 		line.header.frame_id = frame_id;
 		line.ns = "predicted_trajectory";
