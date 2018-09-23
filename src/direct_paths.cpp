@@ -11,6 +11,7 @@
 namespace path_prediction{
 
 	PathsDirector::PathsDirector()
+		: is_linear(false)
 	{
 		std::string frame_id;
 		std::string topic_pub;
@@ -23,6 +24,8 @@ namespace path_prediction{
 
 		ros::param::param<double>
 			("/path_prediction/step_size", step_size, 40);
+
+		n.getParam("/path_prediction/is_linear", is_linear);
 
 		trajectory_publisher = n.advertise<vmsgs::MarkerArray>(topic_pub, 10);
 
@@ -68,7 +71,7 @@ namespace path_prediction{
 
 		for(unsigned step = 0; step < step_size; ++step){
 			for(unsigned i = 0; i < nhumans; ++i){
-				vf.velocityConversion(humans);
+				if(!is_linear) vf.velocityConversion(humans);
 				humans[i].position = paths[arrays->markers[i].id].predict(humans[i].velocity);
 				paths[arrays->markers[i].id].getGoal(humans[i].velocity);
 

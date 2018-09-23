@@ -39,6 +39,7 @@ namespace path_prediction{
 		vmsgs::MarkerArray lines;
 		vmsgs::Marker line;
 
+		bool is_linear; // 線形で予測(実験用)
 		double step_size; // 何ステップ先まで計算するか [回]
 		std::map<int, PathPredictor> paths; // 走査遅いからmap使うのよくない?
 		std::vector<nrf::State4d> humans;

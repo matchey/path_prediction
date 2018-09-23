@@ -84,9 +84,6 @@ void PathsWriter::predictedPathCallback(const visualization_msgs::MarkerArray::C
 
 void PathsWriter::write_csv_pr()
 {
-	// const string filename = "predected_paths.csv";
-	// string filename;
-	// std::ofstream ofs(filename); // 追記にしないと最後のしか残らない->closeしなければいい
 	if(!is_begin){
 		start_time = ros::Time::now();
 		is_begin = true;
@@ -105,17 +102,12 @@ void PathsWriter::write_csv_pr()
 	for(auto it = paths.markers.begin(); it != paths.markers.end(); ++it){
 		string dirname = std::to_string(it->id);
 		string sys_cmd = "mkdir -p pr/" + dirname;
+
 		if(system(sys_cmd.c_str())){/*戻り値何かに使える??*/}
+
 		filename = "pr/" + dirname + "/" + filename + ".csv";
 		std::ofstream ofs(filename);
-		// ofs << "id," << it->id << endl;
-		// for(auto points = it->points.begin(); points != it->points.end(); ++points){
-		// 	ofs << points->x << ", ";
-		// }
-		// ofs << endl;
-		// for(auto points = it->points.begin(); points != it->points.end(); ++points){
-		// 	ofs << points->y << ", ";
-		// }
+
 		for(auto points = it->points.begin(); points != it->points.end(); ++points){
 			ofs << points->x << "," << points->y << endl;
 		}
@@ -135,7 +127,6 @@ void PathsWriter::write_csv_gt(const int& id)
 		string filename = times_gt[id][i];
 		filename = "gt/" + dirname + "/" + filename + ".csv";
 		std::ofstream ofs(filename);
-		// for(auto it = trajectory_gt[id].begin(); it != trajectory_gt[id].end(); ++it){
 		for(int step = 0; step < step_size + 1; ++step){
 			ofs << trajectory_gt[id][i + step].x() << "," << trajectory_gt[id][i + step].y() << endl;
 		}

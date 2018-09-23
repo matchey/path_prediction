@@ -4,9 +4,6 @@ sum_cnt()
 {
 	while read -d $'\0' dir; do
 		if [ -e ./pr/${dir#./gt/} ]; then # pr内にもdir(数字)あったら
-			# for i in `ls ./pr/${dir#./gt}`;do
-			# 	cat ./pr/${dir#./gt}/$i | wc
-			# done
 			for i in `ls ${dir}`;do # gt/dir(数字)/ 内全部csv見る
 				if [ -e ./pr/${dir#./gt/}/$i ]; then # pr内にもcsvあったら
 					paste ${dir}/$i ./pr/${dir#./gt/}/$i |\
