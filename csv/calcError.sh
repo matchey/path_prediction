@@ -14,5 +14,5 @@ sum_cnt()
 	done < <(find ./gt -mindepth 1 -maxdepth 1 -print0) # gt内のdir(数字)全部みる
 }
 
-sum_cnt | awk '{sum+=$1}{cnt+=$2} END{print sum/cnt}'
+sum_cnt | awk '{sum+=$1}{cnt+=$2} END{print sum/cnt" "cnt}'
 
