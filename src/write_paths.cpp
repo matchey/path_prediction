@@ -12,18 +12,6 @@ using std::endl;
 using std::string;
 // using std::vector;
 
-// class TrajectoryWriter{
-// 	public:
-// 	TrajectoryWriter();
-// 	setXY(const Eigen::Vector2d&);
-// 	write();
-//
-// 	private:
-// 	int count;
-// 	ros::Time time_begin;
-// 	std::vector<Eigen::Vector2d> trajectories;
-// };
-
 class PathsWriter{
 	// typedef std::vector<visualization_msgs::MarkerArray> Path_t;
 	// typedef std::map< int, std::vector<Eigen::Vector2d> > Paths;
