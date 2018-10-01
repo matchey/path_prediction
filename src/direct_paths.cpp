@@ -84,7 +84,7 @@ namespace path_prediction{
 		}
 
 		auto it = paths.begin();
-		while(it != paths.end()){
+		while(it != paths.end()){ // 全走査せずにやりたいけど...
 			if(!it->second.observed){
 				paths.erase(it++);
 			}else{
