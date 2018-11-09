@@ -27,7 +27,7 @@ namespace path_prediction{
 
 		n.getParam("/path_prediction/is_linear", is_linear);
 
-		trajectory_publisher = n.advertise<vmsgs::MarkerArray>(topic_pub, 10);
+		trajectory_publisher = n.advertise<vmsgs::MarkerArray>(topic_pub, 1);
 
 		line.header.frame_id = frame_id;
 		line.ns = "predicted_trajectory";
@@ -46,8 +46,10 @@ namespace path_prediction{
 
 	void PathsDirector::publish()
 	{
-		trajectory_publisher.publish(lines);
-		lines.markers.clear();
+		if(lines.markers.size()){
+			trajectory_publisher.publish(lines);
+			lines.markers.clear();
+		}
 	}
 
 	void PathsDirector::createPaths(const pcNormalPtr& pc,
@@ -65,20 +67,23 @@ namespace path_prediction{
 		geometry_msgs::Point p;
 		p.z = 0.0;
 
-		for(unsigned i = 0; i < nhumans; ++i){
+		for(unsigned i = 0; i != nhumans; ++i){
 			paths[arrays->markers[i].id].predict(humans[i].position, humans[i].velocity);
 		}
 
-		for(unsigned step = 0; step < step_size; ++step){
-			for(unsigned i = 0; i < nhumans; ++i){
-				if(!is_linear) vf.velocityConversion(humans);
+		for(unsigned step = 0; step != step_size; ++step){
+			if(!is_linear) vf.velocityConversion(humans); // velocity 更新
+			for(unsigned i = 0; i != nhumans; ++i){
 				humans[i].position = paths[arrays->markers[i].id].predict(humans[i].velocity);
-				paths[arrays->markers[i].id].getGoal(humans[i].velocity);
+				paths[arrays->markers[i].id].getGoal(humans[i].velocity); // velocity 更新
 
 				p.x = humans[i].position.x();
 				p.y = humans[i].position.y();
 				lines.markers[i].points.push_back(p);
 				// std::cout << "lines.size : " << lines.markers.size() << std::endl;
+				// lines.markers[3*i].points.push_back(p);
+				// lines.markers[3*i + 1].points.push_back(p);
+				// lines.markers[3*i + 2].points.push_back(p);
 			}
 
 		}
@@ -101,7 +106,6 @@ namespace path_prediction{
 		p.z = 0.0;
 
 		humans.clear();
-		// lines.markers.clear();
 
 		nhumans = 0;
 		for(auto it = arrays->markers.begin(); it != arrays->markers.end(); ++it){
@@ -127,9 +131,11 @@ namespace path_prediction{
 			p.y = human.position.y();
 			line.points.push_back(p);
 
-			line.header.stamp = ros::Time::now();
+			line.header = it->header;
 
 			lines.markers.push_back(line);
+			// lines.markers.push_back(line); // velo -5 deg
+			// lines.markers.push_back(line); // velo +5 deg
 		}
 
 	}
